@@ -140,7 +140,29 @@ training_generator = datagen_train.flow_from_directory(
 
 validation_generator = datagen_train.flow_from_directory(
     trainingset_dir,
-    subset='validartion',
+    subset='validation',
     shuffle=False,
     target_size=(W, H), class_mode="categorical", batch_size=batch_size, seed=seed
 )
+
+# 어떤 훈련 샘플이 있는지 10개씩 확인해보기
+
+for class_name in class_names:
+    n_cols = 10  # 클래스당 샘플 수
+    fig, axs = plt.subplots(ncols=n_cols, figsize=(10, 3))  # 디스플레이의 넓이와 높이 조정.
+    directory = trainingset_dir + '/' + class_name  # 각 클래스의 폴더 경로
+    assert os.path.exists(directory)  # 클래스의 폴더가 경로에 있는지 확인
+    # 지정한 경로에서 .jpg 확장자를 리스트 형식으로 "n_cols"개씩 뽑아온다
+    image_files = glob.glob(directory + './*.jpg')[:n_cols]
+
+    for i in range(n_cols):
+        # 인덱스를 사용하여, "image_files"리스트에 저장된 이미지를 "image_file"에 저장한다
+        image_file = image_files[i]
+        # PIL 형식으로 이미지를 불러온다.
+        image = load_img(image_file, target_size=(350, 350))
+
+        axs[i].imshow(np.uint(image))  # 해당 인데스의 이미지를 디스플레이한다.
+        axs[i].axis('off')
+        axs[i].set_title(class_name)  # 그래프에서 나타낼 클래스 이름
+
+    plt.show()
