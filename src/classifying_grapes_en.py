@@ -24,44 +24,53 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras import backend as K
 import cv2
 
+""" 
+This is my personal AI project, Image Clssifier. Every code lines may explain detailed function, therefore it would be easier for lookies who starts the AI without deep Python understanding.
 
-""" tf.debugging.set_log_device_placement(True) """
-dataset_dir = r'C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\grape-dataset'
+Although, I tried to explain every code lines detaily, it requires the basic python understanding such as list, dictionary or loop. 
+
+* This code is not written based on my own code skill. Most of code and code technique is referenced with google and my tutor. 
+
+StyleGuide
+- Single Quatation should represent extension such as '.img' for example.
+- Double Quatation should represent a unique word used in the code such as function or variables. 
+"""
+
+# Define the path "dataset_dir" where contains the dataset (In this case, '.img' extension)
+dataset_dir = r'C:\Users\hansung\Documents\GitHub\imageClassification\grape-dataset'
 trainingset_dir = dataset_dir
 testset_dir = dataset_dir
 
-""" config = tf.compat.v1.ConfigProto(gpu_options=tf.compat.v1.GPUOptions(allow_growth=True))
-sess = tf.compat.v1.Session(config=config) """
+# Save trained data ('h5') in to the log_dir path.
+log_dir = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit'
 
-# 학습과정 및 모델 결과를 구글 드라이브에 저장하기 위한 용도
-log_dir = r'C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\logs\fit'
-
+# epoch determinses the number of training performed. The referecing function is "train_model()"
 epochs = 5
 
+# Batch size determins how the amount of data which should be computed at a time
 batch_size = 32
 learning_rate = 5e-5
 W = 224
 H = 224
 seed = 1234
 
-# trainingset_dir의 서브디렉토리
-#
+# trainingset_dir의 서브디렉토리입니다. os라이브러리에서 지정한 경로 (trainingset_dir)의 폴더이름을 리스트화 합니다. 자세한 내용은 아래 링크를 참고하세요.
 # ['concord grape', 'crimson grape', 'shine msucat grape', 'thompson seedless grape']
-# os.listdir > 지정한 디렉토리 내의 모든 파일과 디렉토리 이름의 리스트를 리턴: https://m.blog.naver.com/hankrah/221755651815
 # trainingset_dir 내부의 파일과 디렉토리의 리스트를 sorted하여 반환
 class_names = list(sorted(os.listdir(trainingset_dir)))
 
 # Dictionary Comprehension
+# 전달된 입력 시퀀스 (class_names)를 딕셔너리로 만듭니다. Dictionary와 함께 for문이 사용되면 Comprehension한다고 합니다.
+# 뒤에서 나올 Confusion Matrix에서 사용됩니다.
 class_to_label = dict([(i, class_name)
                       for i, class_name in enumerate(class_names)])
 label_to_class = dict([(class_name, i)
                       for i, class_name in enumerate(class_names)])
 
+
+# assert는 조건에 따라 경고문을 표시합니다.
 assert os.path.exists(trainingset_dir)
 assert os.path.exists(testset_dir)
-
-""" print('class_to_label', class_to_label)
-print('label_to_class', label_to_class) """
 
 print('# of images for each class')
 for category in class_names:
@@ -325,9 +334,6 @@ def show_confusion_matrix(model, validation_generator):
 
 
 show_confusion_matrix(model, validation_generator)
-
-""" testfiles = glob.glob(testset_dir + '/*.jpg') + \
-    glob.glob(testset_dir + '/*.jpeg') """
 
 # Load trained model
 
