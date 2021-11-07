@@ -3,6 +3,7 @@ from skimage import transform
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tensorflow.python.keras.applications.imagenet_utils import validate_activation
 from tensorflow.python.keras.layers.normalization.batch_normalization import BatchNormalization
 from tensorflow import keras
 from tensorflow.python.keras.utils.version_utils import TensorBoardVersionSelector
@@ -102,10 +103,44 @@ failed_files = get_failed_images(dataset_dir)
 
 print('\nfailed_files', failed_files)
 
-# rename failed files
+# 이름 재지정
 
 for file in failed_files:
     src = file
     dest = src[:-4] + '.error'
     print('rename', src, 'to', dest)
     os.rename(src, dest)
+
+
+# ImageDataGenerator는 데이터 증강(Data Augumentation)을 사용하여 하나의 데이터를 여러 방법으로 학습하도록 한다.
+# https://vijayabhaskar96.medium.com/tutorial-image-classification-with-keras-flow-from-directory-and-generators-95f75ebe5720
+
+datagen_train = ImageDataGenerator(
+    preprocessing_function=preprocess_input,  # 이미지 전처리
+    rotation_range=10,  # 지정된 범위에서 이미지를 랜덤하게 루프
+    zoom_range=0.1,  # 이미지를 확대
+    width_shift_range=0.1,  # 수평으로 이미지를 움직임
+    height_shift_range=0.1,  # 수직으로 이미지를 움직임.
+    horizontal_flip=True,  # 이미지를 수평으로 뒤집는다
+    vertical_flip=True,  # 이미지를 수직으로 뒤집는다.
+    validation_split=0.2  # 80%만 훈련하고, 나머지 20%는 검증에 사용한다.
+)
+
+# Batch normalization (배치 정규화) - 학습 과정에서 각 배치 단위 별로 데이터가 다양한 분포를 가지더라도, 각 배치별로 평균과 분산을 이용해 정규화 하는 것을 뜻한다.
+
+training_generator = datagen_train.flow_from_directory(
+    trainingset_dir,  # 실제로 이미지가 들어있는 폴더의 경로
+    subset='training',
+    target_size=(W, H),  # 입력된 이미지의 크기를 재 지정.
+    # 이진 분류기 (bidary classifier)가 아니라면, categorical로 설정.
+    class_mode='categorical',
+    batch_size=batch_size,  # 한번에 처리할 데이터의 개수
+    seed=seed  # 데이터 증강과 셔플에 사용될 seed
+)
+
+validation_generator = datagen_train.flow_from_directory(
+    trainingset_dir,
+    subset='validartion',
+    shuffle=False,
+    target_size=(W, H), class_mode="categorical", batch_size=batch_size, seed=seed
+)
