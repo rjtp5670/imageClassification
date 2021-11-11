@@ -166,3 +166,38 @@ for class_name in class_names:
         axs[i].set_title(class_name)  # 그래프에서 나타낼 클래스 이름
 
     plt.show()
+
+
+def build_model(units):
+    # 전이학습, Transfer Learning - 이미지 데이터 셋의 개수가 작을때, 딥러닝을 적용하기위한 효과적인 방법을 사용한다. ImageNet에서 미리 훈련된 버전을 불러온다.
+    # 참고1: https://bskyvision.com/719
+    # 참고2: https://www.tensorflow.org/guide/keras/transfer_learning?hl=ko
+    # ResNet50 파라미터 설명: https://www.tensorflow.org/api_docs/python/tf/keras/applications/resnet50/ResNet50
+
+    resnet = ResNet50(
+        # Convolutional layer만 가져오고, 네트워크의 최상위에서 Fully connected Layer를 포함할지 설정.
+        include_top=False,
+        pooling="avg",  # 'include_top' 이 'False'로 지정되었을때, 특징 추출을 위한 모드
+        weight="imagenet"  # 가중칭레
+    )
+    for layer in resnet.layers[:-10]:
+        # 만약에 배치 정규화 레이어라면, 트레이닝 가능하다.
+        # layer.trainable 메소드가 False로 설정되면, 가중치가 훈련 불가능으로 변경 (레이어 동결)
+        # isinstance(인스턴스, 클래스/데이터 타입) > 인스턴스가 특정 클래스 / 데이터 타입과 일치할시 True반환
+        layer.trainable = False or isinstance(layer, BatchNormalization)
+
+    # 신경망을 만든다. 보통 객체의 생성과, 입력값을 동시에 넣을때 Dense(units,...)(input)형태 참고: https://han-py.tistory.com/207
+    # 전달된 유닛의 클래스가 4개이니, 4개의 뉴런을 가지고,
+    logits = Dense(units)(resnet.layer[-1].output)
+    output = Activation('softmax')(logits)  # 활성화 함수를 출력에 적용 (여기선 softmax)
+    model = Model(resnet.input, output)
+    optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
+
+    model.compile(optimizer=optimizer,
+                  loss='categorical_crossentropy', metrics=['accuracy'])
+
+    return model
+
+
+units = len(class_names)
+model = build_model(units=units)
