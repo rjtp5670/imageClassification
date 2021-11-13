@@ -99,17 +99,17 @@ def get_failed_images(root_dir):
 
 
 # 이미지를 가져올때 이상한 이미지가 없는지 확인합니다.
-failed_files = get_failed_images(dataset_dir)
+""" failed_files = get_failed_images(dataset_dir)
 
-print('\nfailed_files', failed_files)
+print('\nfailed_files', failed_files) """
 
 # 이름 재지정
 
-for file in failed_files:
+""" for file in failed_files:
     src = file
     dest = src[:-4] + '.error'
     print('rename', src, 'to', dest)
-    os.rename(src, dest)
+    os.rename(src, dest) """
 
 
 # ImageDataGenerator는 데이터 증강(Data Augumentation)을 사용하여 하나의 데이터를 여러 방법으로 학습하도록 한다.
@@ -147,7 +147,7 @@ validation_generator = datagen_train.flow_from_directory(
 
 # 어떤 훈련 샘플이 있는지 10개씩 확인해보기
 
-for class_name in class_names:
+""" for class_name in class_names:
     n_cols = 10  # 클래스당 샘플 수
     fig, axs = plt.subplots(ncols=n_cols, figsize=(10, 3))  # 디스플레이의 넓이와 높이 조정.
     directory = trainingset_dir + '/' + class_name  # 각 클래스의 폴더 경로
@@ -166,6 +166,7 @@ for class_name in class_names:
         axs[i].set_title(class_name)  # 그래프에서 나타낼 클래스 이름
 
     plt.show()
+"""
 
 
 def build_model(units):
@@ -178,7 +179,7 @@ def build_model(units):
         # Convolutional layer만 가져오고, 네트워크의 최상위에서 Fully connected Layer를 포함할지 설정.
         include_top=False,
         pooling="avg",  # 'include_top' 이 'False'로 지정되었을때, 특징 추출을 위한 모드
-        weight="imagenet"  # 가중칭레
+        weights="imagenet"  # 가중치
     )
     for layer in resnet.layers[:-10]:
         # 만약에 배치 정규화 레이어라면, 트레이닝 가능하다.
@@ -187,14 +188,21 @@ def build_model(units):
         layer.trainable = False or isinstance(layer, BatchNormalization)
 
     # 신경망을 만든다. 보통 객체의 생성과, 입력값을 동시에 넣을때 Dense(units,...)(input)형태 참고: https://han-py.tistory.com/207
+    # input을 넣었을 때 output으로 바꿔주는 중간 다리
     # 전달된 유닛의 클래스가 4개이니, 4개의 뉴런을 가지고,
-    logits = Dense(units)(resnet.layer[-1].output)
-    output = Activation('softmax')(logits)  # 활성화 함수를 출력에 적용 (여기선 softmax)
+    logits = Dense(units)(resnet.layers[-1].output)
+    # 활성화 함수를 출력에 적용 (여기선 softmax : 확률 값을 이용해 다양한 클래스를 분류하기 위한 문데)
+    output = Activation('softmax')(logits)
+    # 모델 클래스는 레이어를 추론특징 또는 훈련을 가진 객체로 그룹화한다. input과 output
     model = Model(resnet.input, output)
     optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
 
-    model.compile(optimizer=optimizer,
+    model.compile(optimizer=optimizer,  # Compile은 모델을 Training 하기 이전에, 학습을 위해 모델의 환경설정을 함.
                   loss='categorical_crossentropy', metrics=['accuracy'])
+
+    """ loss (훈련과정에서 사용할 손실 함수)- categorical_crossentropy : 다중 클래스 선택시, 
+        metric (훈련을 모니터링하기위한 지표 선택) - accuracy
+        """
 
     return model
 
