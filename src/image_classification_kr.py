@@ -3,6 +3,7 @@ from skimage import transform
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tensorflow.python.keras import callbacks
 from tensorflow.python.keras.applications.imagenet_utils import validate_activation
 from tensorflow.python.keras.layers.normalization.batch_normalization import BatchNormalization
 from tensorflow import keras
@@ -128,7 +129,7 @@ datagen_train = ImageDataGenerator(
 
 # Batch normalization (배치 정규화) - 학습 과정에서 각 배치 단위 별로 데이터가 다양한 분포를 가지더라도, 각 배치별로 평균과 분산을 이용해 정규화 하는 것을 뜻한다.
 
-training_generator = datagen_train.flow_from_directory(
+train_generator = datagen_train.flow_from_directory(
     trainingset_dir,  # 실제로 이미지가 들어있는 폴더의 경로
     subset='training',
     target_size=(W, H),  # 입력된 이미지의 크기를 재 지정.
@@ -200,12 +201,158 @@ def build_model(units):
     model.compile(optimizer=optimizer,  # Compile은 모델을 Training 하기 이전에, 학습을 위해 모델의 환경설정을 함.
                   loss='categorical_crossentropy', metrics=['accuracy'])
 
-    """ loss (훈련과정에서 사용할 손실 함수)- categorical_crossentropy : 다중 클래스 선택시, 
-        metric (훈련을 모니터링하기위한 지표 선택) - accuracy
-        """
+    """ 
+    Adam 최적화는, 1 2차 모멘트의 적응형 추정을 기반으로하는 확률적 경사 하강법이다. 
+    loss (훈련과정에서 사용할 손실 함수)- categorical_crossentropy : 다중 클래스 선택시, 
+    metric (훈련을 모니터링하기위한 지표 선택) - accuracy
+    """
 
     return model
 
 
 units = len(class_names)
-model = build_model(units=units)
+model = build_model(units=units)  # 모델 설계 및 컴파일. 학습전 단계
+
+# Training
+
+# 메모리 관리를 위해, 이전의 model 및 layer를 초기화
+
+""" Keras에서 만든 모델을 저장할때는 다음과 같은 규칙을 따름
+- 모델은 JSON 파일 또는 yaml 파일로 저장된다
+- weight은 H5 파일로 저장된다 """
+
+
+def train_model(model, epochs, log_dir='logs\fit'):
+    log_dir_root = log_dir
+
+    # data 메소드에서, 객체를 주어진 포맷으로 변환: ttps://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+    time_string = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    log_dir = os.path.join(log_dir, time_string)
+
+    # 콜백은 Training, Evaluation 및 Inference 중, Keras 모델의 동작을 사용자 정의하는 도구
+    # 콜백(callbacks.TensorBoard 및 callbacks.ModelCheckpoint)에 대한 자세한 내용및 튜토리얼 참고: https://www.tensorflow.org/guide/keras/custom_callback?hl=ko
+
+    # 데이터 시각화를 위해 사용
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(
+        log_dir, histogram_freq=1)
+    model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(  # 모델을 저장할때 사용하는 콜백함수, 참고: https://deep-deep-deep.tistory.com/53
+        filepath=log_dir + 'best_model.{epoch:02d}-{val_loss:2f}.h5',
+        monitor='var_loss',  # validation set의 loss가 가장 작을때 저장
+        save_best_only=True)  # 모니터 되고있는 값을 기준으로 가장 좋은값이 저장.
+
+    # 콜백함수로, 모델이 더이상 개선 또는 loss가 없을 경우 학습도중 학습을 종료시킴.
+    early_stopping = tf.keras.callbacks.EarlyStopping(
+        monitor='var_loss', verbose=1, mode='min')
+
+    print("log_dir", log_dir)
+
+    # 지정된 epoch 횟수만큼 모델 훈련하여 history 객체 얻기. history는 acc, loss, val_acc,val_loss등 다양한 정보를 가진다.
+    # fit은 ImageDataGenerator로 인해 생성된 generator를 받고, 훈련을 시작한다.
+    history = model.fit(  # 참고: https://ju-hyang.tistory.com/28
+        train_generator,  # Input 입력값.
+        # Target, 라벨값. 훈련시, 정답인지 아닌지 확인하는 정답지임. Validation Dataset을 가지고, 모델의 정확도 및 loss를 계산한다.
+        validation_data=validation_generator,
+        epochs=epochs,
+        callbacks=[tensorboard_callback,
+                   # early_stopping,
+                   model_checkpoint_callback]
+    )
+
+    last_saved_model = log_dir_root + '/' + time_string + f'_epochs{epochs}.h5'
+    model.save(last_saved_model)
+    print('last saved model', last_saved_model)
+
+    return history
+
+
+units = len(class_names)
+model = build_model(units=units)  # 여기서 한번더 build_model을 해주는 이유는?
+
+s = time.time()
+history = train_model(model, epochs, log_dir)
+elapsed = time.time()-s
+print(
+    f'elapsed time: {elapsed} sec, {(elapsed / epochs)} sec for single epoch')
+
+# 모델 학습과정 표시하기
+
+print('history keys', history.history.keys())
+
+flg, loss_ax = plt.subplots()  # Figure 객체와, axes 객체를 동시에 리턴한다.
+
+
+# 독립적인 Y축 데이터를 가지지만, X 축을 공유하는 그래프.
+# y축의 값은 원래 y축 데이터 (객체 loss_ax)의 반대되는곳에 위치된다. (loss_ax가 그래프에서 왼쪽 y축이면, acc_ax는 오른쪽 y축에 생김)
+# loss에 대해 # https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.twinx.html
+acc_ax = loss_ax.twinx()
+
+# plot을 사용하여, 훈련 과정 시각화 하기
+loss_ax.plot(history.history['loss'], 'y',
+             label='train loss')  # 훈련중 손실에 대한 시각화 y
+loss_ax.plot(history.history['val_loss'], 'r', label='val loss')  # 검증 손실
+
+acc_ax.plot(history.history['accuracy'], 'b',
+            label='train acc')  # 훈련중 정확도에 대한 시각화
+acc_ax.plot(history.history['val_accuracy'], 'g', label='val acc')  # 검증 정확도
+
+loss_ax.set_xlabel('epoch')
+loss_ax.set_ylabel('loss')
+acc_ax.set_ylabel('accuracy')
+
+loss_ax.legend(loc='upper left')
+acc_ax.legend(loc='lower left')
+
+plt.show()
+
+# Confusion Matrix: Predeiction과 Actual 값을 행렬로 Count하여, Accuracy를 확인한다.  https://seo-seon.tistory.com/entry/%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D-%EB%B6%84%EB%A5%98%EB%AA%A8%ED%98%95-%ED%8F%89%EA%B0%80-Confusion-Matrix#:~:text=Confusion%20Matrix%C2%A0%EC%9D%B4%ED%95%B4%C2%A0%C2%A0
+
+
+def show_confusion_matrix(model, validation_generator):
+    validation_generator.reset()
+
+    y_preds = model.predict(validation_generator)  # 주어진 입력에대해 prediction을 얻음
+    # argmax - 최대값을 가진 인데스 추출.
+    # prediction을 얻은 뒤, 최대값을 가진 indices를 배열로 반환
+    y_preds = np.argmax(y_preds, axis=1)
+    print(y_preds)
+    y_trues = validation_generator.classes  # 실제 검증 값. Prediction과 비교한다
+    print(y_trues)
+    cm = confusion_matrix(y_trues, y_preds)
+    print(cm)
+
+    fig, ax = plt.subplots(figsize=(7, 6))  # figure size를 지정 (700 x 600 px)
+
+    # annot이 Ture일 경우, 각 데이터 값을 셀에 기록한다.
+    # Confusion Matrix에 heatmap을 적용하여 color bar를 적용한다.
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                cbar_kws={'shrink': .3}, linewidths=.1, ax=ax)
+
+    ax.set(
+        xticklabels=list(label_to_class.keys()),  # Heatmap의 X축 레이블  (Predic)
+        yticklabels=list(label_to_class.keys()),  # Heatmap의 Y축 레이블 (True)
+        title='confusion matrix',
+        ylabel='True label',
+        xlabel='Predicted label'
+    )
+
+    params = dict(rotation=45, ha='center', rotation_mode='anchor')
+
+    # **params - 키워드 인자 언패킹. 키와 값이 있는 dict 타입의 변수에는 ** 표시를 통해 호출하는 함수에 전달.
+    plt.setp(ax.get_yticklabels(), **params)
+    plt.setp(ax.get_xticklabels(), **params)
+    plt.show()
+
+
+# Confusion Maxtrix를 Display. 인자 값으로 model 객체와, 답지 (validation)를 넘겨준다.
+show_confusion_matrix(model, validation_generator)
+
+# 새로 학습한 모델 경로를 지정
+trained_model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
+assert os.path.exists(trained_model)
+
+trained_model = tf.keras.models.load_model(trained_model)
+
+# 이전에 학습된 모델의 Confusion Matrix를 Display 함
+show_confusion_matrix(trained_model, validation_generator)
+
+# 테스트용 Image File을 분류기에 집어 넣어 결과 테스트
