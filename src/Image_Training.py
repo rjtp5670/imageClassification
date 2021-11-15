@@ -15,7 +15,6 @@ import copy
 import datetime
 import time
 import glob
-import os
 import tensorflow as tf
 import matplotlib.pylab as plt
 import numpy as np
@@ -148,7 +147,7 @@ validation_generator = datagen_train.flow_from_directory(
 
 # 어떤 훈련 샘플이 있는지 10개씩 확인해보기
 
-""" for class_name in class_names:
+for class_name in class_names:
     n_cols = 10  # 클래스당 샘플 수
     fig, axs = plt.subplots(ncols=n_cols, figsize=(10, 3))  # 디스플레이의 넓이와 높이 조정.
     directory = trainingset_dir + '/' + class_name  # 각 클래스의 폴더 경로
@@ -167,7 +166,6 @@ validation_generator = datagen_train.flow_from_directory(
         axs[i].set_title(class_name)  # 그래프에서 나타낼 클래스 이름
 
     plt.show()
-"""
 
 
 def build_model(units):
@@ -309,11 +307,11 @@ plt.show()
 
 def show_confusion_matrix(model, validation_generator):
     validation_generator.reset()
-
-    y_preds = model.predict(validation_generator)  # 주어진 입력에대해 prediction을 얻음
+    # 주어진 입력에대해 prediction을 얻음. Validation_generator의 차원수는 4차원이어야한다.
+    y_preds = model.predict(validation_generator)
     # argmax - 최대값을 가진 인데스 추출.
     # prediction을 얻은 뒤, 최대값을 가진 indices를 배열로 반환
-    y_preds = np.argmax(y_preds, axis=1)
+    y_preds = np.argmax(y_preds, axis=1)  # 설계한 모델에 의해 얻어진 추정값
     print(y_preds)
     y_trues = validation_generator.classes  # 실제 검증 값. Prediction과 비교한다
     print(y_trues)
@@ -346,13 +344,49 @@ def show_confusion_matrix(model, validation_generator):
 # Confusion Maxtrix를 Display. 인자 값으로 model 객체와, 답지 (validation)를 넘겨준다.
 show_confusion_matrix(model, validation_generator)
 
-# 새로 학습한 모델 경로를 지정
-trained_model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
-assert os.path.exists(trained_model)
 
-trained_model = tf.keras.models.load_model(trained_model)
+# 새로 학습한 모델 경로를 지정
+# trained_model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
+# assert os.path.exists(trained_model)
+
+# trained_model = tf.keras.models.load_model(trained_model)
 
 # 이전에 학습된 모델의 Confusion Matrix를 Display 함
-show_confusion_matrix(trained_model, validation_generator)
+# show_confusion_matrix(trained_model, validation_generator)
+
 
 # 테스트용 Image File을 분류기에 집어 넣어 결과 테스트
+
+
+def load(filename):
+    np_image = Image.open(filename)
+    np_image = np.array(np_image).astype('float32')  # 이미지를 넘파이 배열로 변환
+    # print(np_image.shape)  # 450, 450, 3
+    # print(np_image.ndim)
+    np_image = transform.resize(np_image, (224, 224, 3))
+    # print(np_image.shape)
+    # print(np_image.ndim)
+    # 3 차원 Array에 이미지 샘플을 구분하도록 1개 차원을 추가하여 4차원으로 변경
+    np_image = np.expand_dims(np_image, axis=0)
+    # print(np_image.shape)
+    # print(np_image.ndim)
+    return np_image
+
+
+tf.keras.backend.clear_session()
+
+model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
+model = tf.keras.models.load_model(model)  # 모델을 불러온다.
+
+filename = r'C:\Users\hansung\Documents\GitHub\imageClassification\input_img\thompson_0005.jpg'  # 테스트 이미지
+image = load(filename)  # filename 경로의 톰슨 포토를 load
+
+image = preprocess_input(image)  # 표준 이미지를 적절하게 변환
+y_pred = model(image)[0]  # 모델에, 이미지를 전달시 4차원으로 변환 필요 (np.expand_dims)
+print(y_pred)
+cls = np.argmax(y_pred)
+print(f'{class_to_label[cls]}: {(y_pred[cls]*100):.1f}%')
+print([f'{label}: {(pred*100):.1f}' for label,
+       pred in zip(class_to_label.values(), y_pred)])
+pred_img = Image.open(filename).resize((256, 256))
+pred_img.show()
