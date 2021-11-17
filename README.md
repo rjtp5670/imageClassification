@@ -31,11 +31,71 @@ https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=shari
 
 - Classes: Concord Grape, Crimson Grape, Shine Msucat Grape, Thompson Seedless Grape.
 
+Download the [Grape Data Set](https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=sharing)
+
 ### Preprocessing - ImageDataGenerator
 
-### Transfer Learning
+Keras provides Image Augumentation generator that increases dataset training.
+
+```python
+datagen_train = ImageDataGenerator(
+    preprocessing_function=preprocess_input,  # Preprocessing
+    rotation_range=10,  # Loop within specified ranges
+    zoom_range=0.1,  # Zoom images
+    width_shift_range=0.1,  # Shift image
+    height_shift_range=0.1,  #
+    horizontal_flip=True,  # Flip Image
+    vertical_flip=True,  #
+    validation_split=0.2  # Use 20% images for a validation.
+)
+```
+
+### Build Model
+
+```python
+def build_model(units):
+
+    resnet = ResNet50(
+        include_top=False,
+        pooling="avg",
+        weights="imagenet"
+    )
+    for layer in resnet.layers[:-10]:
+        layer.trainable = False or isinstance(layer, BatchNormalization)
+
+    logits = Dense(units)(resnet.layers[-1].output)
+    output = Activation('softmax')(logits)
+
+    model = Model(resnet.input, output)
+    optimizer = keras.optimizers.Adam(learning_rate=learning_rate)
+
+    model.compile(optimizer=optimizer,
+                  loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+```
+
+#### Transfer Learning
+
+When you have limited datasets, you can bring predefined training network and apply the trained feature from [`ResNet50`](https://www.tensorflow.org/api_docs/python/tf/keras/applications/resnet50/ResNet50).
 
 ### Training
+
+Load a model to train using `fit` method
+
+```python
+history = model.fit(
+    train_generator,  #
+    validation_data=validation_generator,
+    epochs=epochs,
+    callbacks=[tensorboard_callback,
+                # early_stopping,
+                model_checkpoint_callback]
+)
+
+units = len(class_names)
+model = build_model(units=units)
+
+```
 
 ### Confusion Matrix
 
