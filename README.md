@@ -99,4 +99,81 @@ model = build_model(units=units)
 
 ### Confusion Matrix
 
-### Classification
+Generate a predict matrix where each cell shows the counts value of training result. Therefore, you can visually see the built model performance.
+
+![Confusion Matrix](.img)
+
+```python
+def show_confusion_matrix(model, validation_generator):
+    validation_generator.reset()
+    y_preds = model.predict(validation_generator)
+    y_preds = np.argmax(y_preds, axis=1)
+    y_trues = validation_generator.classes
+    cm = confusion_matrix(y_trues, y_preds)
+
+    fig, ax = plt.subplots(figsize=(7, 6))  # 700 x 600 px
+
+    # Adding up with "True"
+    # Apply color bar on heatmap
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                cbar_kws={'shrink': .3}, linewidths=.1, ax=ax)
+
+    ax.set(
+        xticklabels=list(label_to_class.keys()),  # X-Axis label: Prediction
+        yticklabels=list(label_to_class.keys()),  # Y-Axis label: True
+        title='confusion matrix',
+        ylabel='True label',
+        xlabel='Predicted label'
+    )
+
+    params = dict(rotation=45, ha='center', rotation_mode='anchor')
+
+    plt.setp(ax.get_yticklabels(), **params)
+    plt.setp(ax.get_xticklabels(), **params)
+    plt.show()
+
+
+# Display Confusion Matrix.
+show_confusion_matrix(model, validation_generator)
+
+```
+
+### Performing the trained model
+
+Classify the type of grape into the right class according to the trained model justification. A test image is a thompson grape. (\input_img\thompson_0005.jpg)
+
+```python
+
+Grapes = r'C:\Users\hansung\Documents\GitHub\imageClassification\grape-dataset' # Doesn't have to be a path.
+class_names = list(sorted(os.listdir(Grapes)))
+
+# Dictionary Comprehenstion
+class_to_label = dict([(i, class_name)
+                      for i, class_name in enumerate(class_names)])
+
+# Convert image to numpy array(4D array)
+def load(filename):
+    np_image = Image.open(filename)
+    np_image = np.array(np_image).astype('float32')  #
+    np_image = transform.resize(np_image, (224, 224, 3))
+    np_image = np.expand_dims(np_image, axis=0)
+    return np_image
+
+# Test Image Path. Can be any images
+filename = r'C:\Users\hansung\Documents\GitHub\imageClassification\input_img\thompson_0005.jpg'
+model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
+# Load model .h5 file
+model = tf.keras.models.load_model(model)
+
+image = load(filename)  #
+
+image = preprocess_input(image)
+y_pred = model(image)[0]
+print(y_pred)
+cls = np.argmax(y_pred)
+print(f'{class_to_label[cls]}: {(y_pred[cls]*100):.1f}%')
+print([f'{label}: {(pred*100):.1f}' for label,
+      pred in zip(class_to_label.values(), y_pred)])
+pred_img = Image.open(filename).resize((256, 256))
+pred_img.show()
+```
