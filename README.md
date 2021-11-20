@@ -25,17 +25,21 @@ Concord Grape, Crimson Grape, Shine Msucat Grape, Thompson Seedless Grape are cl
 
 `Download`: [Grape Data Set](https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=sharing)
 
-<img src="img/dataset_load_concord.png"  width="500">
 > Concord Grapes
 
-<img src="img/dataset_load_chrimson.png"  width="500">
+<img src="img/dataset_load_concord.png"  width="500">
+
 > Crimson Grape
 
-<img src="img/dataset_load_shine.png"  width="500">
+<img src="img/dataset_load_chrimson.png"  width="500">
+
 > Shine Msucat Grape
 
-<img src="img/dataset_load_thompson.png"  width="500">
+<img src="img/dataset_load_shine.png"  width="500">
+
 > Thompson Seedless Grape
+
+<img src="img/dataset_load_thompson.png"  width="500">
 
 ### Preprocessing - ImageDataGenerator
 
@@ -52,6 +56,23 @@ datagen_train = ImageDataGenerator(
     vertical_flip=True,  #
     validation_split=0.2  # Use 20% images for a validation.
 )
+
+train_generator = datagen_train.flow_from_directory(
+    trainingset_dir,
+    subset='training',
+    target_size=(W, H),
+    class_mode='categorical',
+    batch_size=batch_size,
+    seed=seed
+)
+
+validation_generator = datagen_train.flow_from_directory(
+    trainingset_dir,
+    subset='validation',
+    shuffle=False,
+    target_size=(W, H), class_mode="categorical", batch_size=batch_size, seed=seed
+)
+
 ```
 
 ### Build Model
