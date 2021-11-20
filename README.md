@@ -8,14 +8,6 @@ This is my personal AI project to take a bite of AI world. Honestly, I have no b
 
 I has done my best adding very detailed explanation based on my noob experience, so that hope this help someone to understand the difficult AI world.
 
-<!--
-
-Grape Data Set Download Link
-
-https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=sharing
-
--->
-
 ## Operating Enviroment
 
 - Windows 10
@@ -29,9 +21,14 @@ https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=shari
 
 ### Dataset Load
 
-- Classes: Concord Grape, Crimson Grape, Shine Msucat Grape, Thompson Seedless Grape.
+Concord Grape, Crimson Grape, Shine Msucat Grape, Thompson Seedless Grape are classes.
 
-Download the [Grape Data Set](https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=sharing)
+`Download`: [Grape Data Set](https://drive.google.com/file/d/1hrMcXlr-kjzr0QF7QZcmMrBv16tyCqEI/view?usp=sharing)
+
+<img src="img/dataset_load_concord.png"  width="500">
+<img src="img/dataset_load_chrimson.png"  width="500">
+<img src="img/dataset_load_shine.png"  width="500">
+<img src="img/dataset_load_thompson.png"  width="500">
 
 ### Preprocessing - ImageDataGenerator
 
@@ -101,7 +98,9 @@ model = build_model(units=units)
 
 Generate a predict matrix where each cell shows the counts value of training result. Therefore, you can visually see the built model performance.
 
-![Confusion Matrix](.img)
+<img src="img\Confusion_Matrixpng.png"  width="500">
+
+> Confusion Matrix: The more accuracy the classifier can get, the more deeper blue it is.
 
 ```python
 def show_confusion_matrix(model, validation_generator):

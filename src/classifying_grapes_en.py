@@ -124,7 +124,7 @@ datagen_train = ImageDataGenerator(
     validation_split=0.2  # 약 20%를 검증에 사용. 10000개의 데이터가 있을경우 8000개를 훈련에 사용, 2000개를 검증에 사용
 )
 
-# trainingset_dir : C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\grape-dataset
+# trainingset_dir : C:\Users\hansung\Documents\GitHub\imageClassification\grape-dataset
 
 # batch - Gradient를 구하는 단위임.
 # Epoch - 학습데이터 전체를 한번 학습하는것을 Epoch 라고함
@@ -217,7 +217,7 @@ def train_model(model, epochs, log_dir='logs\fit'):
     log_dir_root = log_dir
     # date 메소드에서, 객체를 스트링형태로 주어진 포맷으로 변환.  https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
     time_string = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    # log_dir C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\log
+    # log_dir C:\Users\hansung\Documents\GitHub\imageClassification\log
     log_dir = os.path.join(log_dir, time_string)
 
     # 콜백은 Training, Evaluation 및 Inference 중, Keras 모델의 동작을 사용자 정의할수있는 도구.
@@ -341,7 +341,7 @@ tf.keras.backend.clear_session()
 
 # 새로 학습한 모델 경로를 지정
 # Q: 여기는 제가 학습한 파일 (h5)을 불러오는건가요? tf.keras.callbacks.ModelCheckpoint 함수를 실행할때 h5파일이 새로 생성되는데 차이는 무엇인가요?
-trained_model = r'C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\logs\fit\20211106-221532_epochs5.h5'
+trained_model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
 #from tensorflow import keras
 assert os.path.exists(trained_model)
 
@@ -378,10 +378,10 @@ def load(filename):
 
 
 tf.keras.backend.clear_session()
-model = r'C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\logs\fit\20211106-221532_epochs5.h5'
+model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
 model = tf.keras.models.load_model(model)  # 모델을 불러온다
 
-filename = r'C:\Users\hansung\Documents\GitHub\Image_Classification\imageClassification\input_img\thompson_0005.jpg'  # 테스트할 톰슨 포도 경로
+filename = r'C:\Users\hansung\Documents\GitHub\imageClassification\input_img\thompson_0005.jpg'  # 테스트할 톰슨 포도 경로
 #filename = 'concord.jpg'
 #filename = '/content/thompson_0005.jpg'
 image = load(filename)  # filename 경로의 톰슨 포도를 load
