@@ -33,9 +33,10 @@ def load(filename):
     return np_image
 
 
-#  tf.keras.backend.clear_session()
+tf.keras.backend.clear_session()
 
-filename = r'C:\Users\hansung\Documents\GitHub\imageClassification\input_img\thompson_0005.jpg'  # 테스트 이미지
+# 테스트 이미지 (input_img 경로 참조)
+filename = r'C:\Users\hansung\Documents\GitHub\imageClassification\input_img\thompson_test_03.jpg'
 model = r'C:\Users\hansung\Documents\GitHub\imageClassification\logs\fit\20211106-221532_epochs5.h5'
 model = tf.keras.models.load_model(model)  # 모델을 불러온다.
 

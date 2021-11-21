@@ -149,7 +149,7 @@ validation_generator = datagen_train.flow_from_directory(
 
 for class_name in class_names:
     n_cols = 10  # 클래스당 샘플 수
-    fig, axs = plt.subplots(ncols=n_cols, figsize=(10, 3))  # 디스플레이의 넓이와 높이 조정.
+    fig, axs = plt.subplots(ncols=n_cols, figsize=(22, 3))  # 디스플레이의 넓이와 높이 조정.
     directory = trainingset_dir + '/' + class_name  # 각 클래스의 폴더 경로
     assert os.path.exists(directory)  # 클래스의 폴더가 경로에 있는지 확인
     # 지정한 경로에서 .jpg 확장자를 리스트 형식으로 "n_cols"개씩 뽑아온다
@@ -208,6 +208,7 @@ def build_model(units):
     return model
 
 
+print("Resnet - Transfer Learning")
 units = len(class_names)
 model = build_model(units=units)  # 모델 설계 및 컴파일. 학습전 단계
 
@@ -263,8 +264,7 @@ def train_model(model, epochs, log_dir='logs\fit'):
     return history
 
 
-units = len(class_names)
-model = build_model(units=units)  # 여기서 한번더 build_model을 해주는 이유는?
+print("#################################Training Start###########################################")
 
 s = time.time()
 history = train_model(model, epochs, log_dir)
@@ -299,6 +299,8 @@ acc_ax.set_ylabel('accuracy')
 
 loss_ax.legend(loc='upper left')
 acc_ax.legend(loc='lower left')
+
+print("#################################Show the result###########################################")
 
 plt.show()
 
@@ -342,6 +344,7 @@ def show_confusion_matrix(model, validation_generator):
 
 
 # Confusion Maxtrix를 Display. 인자 값으로 model 객체와, 답지 (validation)를 넘겨준다.
+print("#################################Show Confusion Matrix###########################################")
 show_confusion_matrix(model, validation_generator)
 
 
