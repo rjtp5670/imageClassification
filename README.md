@@ -226,7 +226,7 @@ show_confusion_matrix(model, validation_generator)
 
 ### Performing the trained model
 
-Classify the type of grape into the right class according to the trained model justification. A test image is a thompson grape. (\input_img\thompson_0005.jpg)
+Classify the type of grape into the right class according to the trained model justification. A test image is a thompson grape. (\input_img\thompson_test_03.jpg)
 
 ```python
 
