@@ -266,16 +266,16 @@ pred_img.show()
 
 <img src="input_img\concord_grape_test_01.jpg"  width="150">
 
-![Concord_Result](img\Training_Result_Concord_99.6.png)
+![Concord_Result](/img/Training_Result_Concord_99.6.png)
 
 <img src="input_img\shine_muscat_test_02.jpg"  width="150">
 
-![ShineMuscat_Result](img\Training_Result_ShineMuscat_73.7.png)
+![ShineMuscat_Result](/img/Training_Result_ShineMuscat_73.7.png)
 
 <img src="input_img\thompson_test_03.jpg"  width="150">
 
-![Thompson_Result](img\Training_Result_Thompson_68.5.png)
+![Thompson_Result](/img/Training_Result_Thompson_68.5.png)
 
 <img src="input_img\chrimpson_test_04.jpg"  width="150">
 
-![Chrimson_Result](img\Training_Result_Chrimson_99.8.png)
+![Chrimson_Result](/img/Training_Result_Chrimson_99.8.png)
