@@ -264,17 +264,27 @@ pred_img = Image.open(filename).resize((256, 256))
 pred_img.show()
 ```
 
+#### Result
+
+1. Concord Grape - 99.6%
+
 <img src="input_img\concord_grape_test_01.jpg"  width="150">
 
 ![Concord_Result](/img/Training_Result_Concord_99.6.png)
+
+2. Shine Muscat - 73.7%
 
 <img src="input_img\shine_muscat_test_02.jpg"  width="150">
 
 ![ShineMuscat_Result](/img/Training_Result_ShineMuscat_73.7.png)
 
+3. Thompson Seedless- 68.5%
+
 <img src="input_img\thompson_test_03.jpg"  width="150">
 
 ![Thompson_Result](/img/Training_Result_Thompson_68.5.png)
+
+4. Chrimson Grape - 99.8%
 
 <img src="input_img\chrimpson_test_04.jpg"  width="150">
 
