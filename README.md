@@ -28,14 +28,22 @@ Concord Grape, Crimson Grape, Shine Msucat Grape, Thompson Seedless Grape are cl
 <img src="img/dataset_load_concord.png"  width="500">
 > Concord Grapes
 
+<br>
+
 <img src="img/dataset_load_chrimson.png"  width="500">  
 > Crimson Grape
+
+<br>
 
 <img src="img/dataset_load_shine.png"  width="500">  
 > Shine Msucat Grape
 
+<br>
+
 <img src="img/dataset_load_thompson.png"  width="500">  
 > Thompson Seedless Grape
+
+<br>
 
 ### Preprocessing - ImageDataGenerator
 
