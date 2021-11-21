@@ -158,7 +158,9 @@ model = build_model(units=units)
 ```
 
 <img src="img/Training_01.png"  width="500">
-<!-- 
+
+<!--
+
 ```
 2021-11-21 20:10:26.236503: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:185] None of the MLIR Optimization Passes are enabled (registered 2)
 Epoch 1/5
@@ -184,7 +186,6 @@ elapsed time: 136.29585313796997 sec, 27.259170627593996 sec for single epoch
 history keys dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 ```
  -->
-<img src="img\Training_02_result.png"  width="500">
 
 - Trained model's return value: history keys dict_keys(['loss', 'accuracy', 'val_loss', 'val_accuracy'])
 
