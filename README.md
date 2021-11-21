@@ -8,7 +8,13 @@ This is my personal AI project to take a bite of AI world. Honestly, I have no b
 
 I has done my best adding very detailed explanation based on my noob experience, so that hope this help someone to understand the difficult AI world.
 
-## Operating Enviroment
+**Table Of Content**
+
+- [Operating Enviroment](#operating-enviroment)
+- [Training](#training)
+- [Classification](#classification)
+
+## [Operating Enviroment](#operating-enviroment)
 
 - Windows 10
 - Visual Studio Code
@@ -234,7 +240,7 @@ show_confusion_matrix(model, validation_generator)
 
 > Add colorvar using a heatmap
 
-## Classification.
+## [Classification](#classification)
 
 Run [ImgClassification.py](https://github.com/rjtp5670/imageClassification/blob/main/src/ImgClassification.py)
 
