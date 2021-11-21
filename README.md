@@ -19,6 +19,10 @@ I has done my best adding very detailed explanation based on my noob experience,
 
 - TensorFlow v2.6 (GPU used, Nvidia Geforce 1050)
 
+## Training
+
+Run [Image_Training.py](https://github.com/rjtp5670/imageClassification/blob/main/src/Image_Training.py)
+
 ### Dataset Load
 
 Concord Grape, Crimson Grape, Shine Msucat Grape, Thompson Seedless Grape are classes.
@@ -128,7 +132,7 @@ def build_model(units):
 
 When you have limited datasets, you can bring predefined training network and apply the trained feature from [`ResNet50`](https://www.tensorflow.org/api_docs/python/tf/keras/applications/resnet50/ResNet50).
 
-### Training
+### Training a model
 
 Load a model to train using `fit` method.
 
@@ -229,6 +233,10 @@ show_confusion_matrix(model, validation_generator)
 <img src="img\Confusion_Matrixpng.png"  width="500">
 
 > Add colorvar using a heatmap
+
+## Classification.
+
+Run [ImgClassification.py](https://github.com/rjtp5670/imageClassification/blob/main/src/ImgClassification.py)
 
 ### Performing the trained model
 
