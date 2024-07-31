@@ -1,7 +1,6 @@
 # ImageClassification
 
 - Desgined by David Park
-- No License
 - Contact: rjtp5670@gmail.com
 
 This is my personal AI project aimed at exploring the world of AI. Honestly, I have no background knowledge of AI and limited programming experience. As a result, most of the codes were not written from scratch by me. I am very grateful to my tutor, Junhee, for his significant assistance, and to the TensorFlow tutorials and Google search for their invaluable resources.
