@@ -4,9 +4,11 @@
 - No License
 - Contact: rjtp5670@gmail.com
 
-This is my personal AI project to take a bite of AI world. Honestly, I have no background knowledge about AI (And have lack of programming experience, not gonna lie). So that most of codes are not written from scratch and by myself. Thanks to my tutor, Junhee, he helps me a lot to work around, but also Tensorflow Tutorial & references with Google search.
+This is my personal AI project aimed at exploring the world of AI. Honestly, I have no background knowledge of AI and limited programming experience. As a result, most of the codes were not written from scratch by me. I am very grateful to my tutor, Junhee, for his significant assistance, and to the TensorFlow tutorials and Google search for their invaluable resources.
 
-I has done my best adding very detailed explanation based on my noob experience, so that hope this help someone to understand the difficult AI world.
+I have done my best to add very detailed explanations based on my novice experience, hoping that this will help someone else understand the complex world of AI.
+
+---
 
 **Table Of Content**
 
